@@ -1,0 +1,58 @@
+server:
+  port: 9000
+envDestroyer:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/?logger=com.mysql.cj.log.StandardLogger&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=true&requireSSL=true&trustServerCertificate=true"
+    username: c123user
+    password: c123456789
+    driver-class-name: com.mysql.cj.jdbc.Driver
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/?logger=com.mysql.cj.log.StandardLogger&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=true&trustServerCertificate=true"
+    username: c123user
+    password: c123456789
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: default
+logging:
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n'
+  level:
+    org.hibernate.sql: debug
+environment:
+  table: true
+  db_pattern: "ca_{{ENVID}}_db"
+  user_pattern: "ca_{{ENVID}}_user"
+sql:
+  createUser: "CREATE USER ?@? IDENTIFIED BY ? REQUIRE SSL"
+  isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
+  isDBExists: "show databases like ?"
+  createDB: "create database IF NOT EXISTS "
+  getAllConnections: "SELECT usr user, COUNT(1) Connections FROM (SELECT user usr,LEFT(host,LOCATE(':',host) - 1) hst FROM information_schema.processlist WHERE user NOT IN ('system user','root')) A GROUP BY usr"
+  getUserHost: "select host from mysql.user where user=?"
+  revokePrivileges: "revoke all privileges, grant option from ?@?"
+  changeHost: "RENAME USER ?@? TO ?@?"
+  changePassword: "ALTER USER ?@? IDENTIFIED BY ?"
+  dropUser: "DROP USER ?@?"
+  getAllUsers: "select user, host from mysql.user"
+  userGrants: "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON "
+  userGrantsTo: ".* TO ?@?"
+  userGrantsMinimal: "grant execute, select, insert, update, delete on "
+  grantsMinimalTo: ".* TO ?@?"
+  grantTrigger: "grant trigger on "
+  triggerTo: ".vault_file_categories_records TO ?@?"
+  dropDB: "DROP DATABASE "
+  revokeUser: "revoke all privileges, grant option from ?@?"
+  extendedUser: "grant select, insert, update, delete, create, index,alter, execute, create routine, trigger, references on"
+  mts:
+    getUser: "select env_mySql_user, password from environments.mts where env_mySql_user=?"
+    getAll: "select * from environments.mts order by create_date DESC"
+    insert: "INSERT INTO environments.mts (id, env_mySql_user, env_mySql_db, create_date, status, vault_ip, password) VALUES(?,?,?,?,?,?,?)"
+    isRecordExists: "select count(1) as qty from environments.mts where id=?"
+    isRecordExistsUsername: "select count(1) as qty from environments.mts where env_mySql_user=?"
+    updateHost: "update environments.mts set vault_ip=? where env_mySql_user=?"
+    updatePassword: "update environments.mts set password=? where id =?"
+    update: "update environments.mts set status=?, env_mySql_user=?, password=? where id =?"
+    updateStatus: "update environments.mts set status=? where id=?"
+    truncate: "TRUNCATE TABLE environments.mts"
+    delRow: "DELETE FROM environments.mts WHERE id=?"
