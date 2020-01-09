@@ -1,12 +1,23 @@
 package com.c123.MySQLConsole.controller;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.c123.MySQLConsole.entity.Message;
+import com.c123.MySQLConsole.entity.User;
+import org.springframework.http.ResponseEntity;
 
-@RestController
-@RequestMapping("/users")
-public class UserController {
+public interface UserController {
 
+    // GET
+    ResponseEntity<User> restore(String envId);
 
+    // POST
+
+    // PUT
+    ResponseEntity<Message> rename(String envId, String newHost);
+    ResponseEntity<Message> secure(String envId);
+    ResponseEntity<Message> extend(String envId);
+    ResponseEntity<Message> revoke(String envId);
+    ResponseEntity<User> rotate(String envId);
+
+    // DELETE
 
 }

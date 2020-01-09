@@ -17,10 +17,9 @@ logging:
 
   level:
     root: WARN
-    com.c123.KafkaSpring: WARN
+    com.c123.MySQLConsole: DEBUG
     org.springframework.core: WARN
-    org.springframework.kafka: WARN
-    org.hibernate: WARN
+    org.springframework.web: INFO
 
   pattern:
     console: "%green(%d) %highlight(%5p) %magenta([%t]) %cyan(%logger{36}.%M) - %msg%n"
@@ -29,43 +28,57 @@ logging:
 
   file:
     name: log/app.log
-    max-size: 10MB
-    max-history: 30
+    max-size: 20MB
+    max-history: 10
 
-environment:
-  db_pattern: "ca_{{ENVID}}_db"
-  user_pattern: "ca_{{ENVID}}_user"
+application:
 
-sql:
-  createUser: "CREATE USER ?@? IDENTIFIED BY ? REQUIRE SSL"
-  isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
-  isDBExists: "show databases like ?"
-  createDB: "create database IF NOT EXISTS "
-  getAllConnections: "SELECT usr user, COUNT(1) Connections FROM (SELECT user usr,LEFT(host,LOCATE(':',host) - 1) hst FROM information_schema.processlist WHERE user NOT IN ('system user','root')) A GROUP BY usr"
-  getUserHost: "select host from mysql.user where user=?"
-  revokePrivileges: "revoke all privileges, grant option from ?@?"
-  changeHost: "RENAME USER ?@? TO ?@?"
-  changePassword: "ALTER USER ?@? IDENTIFIED BY ?"
-  dropUser: "DROP USER ?@?"
-  getAllUsers: "select user, host from mysql.user"
-  userGrants: "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON "
-  userGrantsTo: ".* TO ?@?"
-  userGrantsMinimal: "grant execute, select, insert, update, delete on "
-  grantsMinimalTo: ".* TO ?@?"
-  grantTrigger: "grant trigger on "
-  triggerTo: ".vault_file_categories_records TO ?@?"
-  dropDB: "DROP DATABASE "
-  revokeUser: "revoke all privileges, grant option from ?@?"
-  extendedUser: "grant select, insert, update, delete, create, index,alter, execute, create routine, trigger, references on"
-  mts:
-    getUser: "select env_mySql_user, password from environments.mts where env_mySql_user=?"
-    getAll: "select * from environments.mts order by create_date DESC"
-    insert: "INSERT INTO environments.mts (id, env_mySql_user, env_mySql_db, create_date, status, vault_ip, password) VALUES(?,?,?,?,?,?,?)"
-    isRecordExists: "select count(1) as qty from environments.mts where id=?"
-    isRecordExistsUsername: "select count(1) as qty from environments.mts where env_mySql_user=?"
-    updateHost: "update environments.mts set vault_ip=? where env_mySql_user=?"
-    updatePassword: "update environments.mts set password=? where id =?"
-    update: "update environments.mts set status=?, env_mySql_user=?, password=? where id =?"
-    updateStatus: "update environments.mts set status=? where id=?"
-    truncate: "TRUNCATE TABLE environments.mts"
-    delRow: "DELETE FROM environments.mts WHERE id=?"
+  password:
+    min_length: 8
+    max_length: 1024
+    mock_value: VERYVERYVERYLONGPASSWORD
+    symbols: 01!@#$%^&*(){}<>?/:;`~234qwertyuiopasdfghjklzxcvbnm567QWERTYUIOPASDFGHJKLZXCVBNM89
+
+  environment:
+    length: 10
+    symbols: 015423876941535846021534897455198019810981135418793245
+
+  pattern:
+    db: ca_{{ENVID}}_db
+    user: ca_{{ENVID}}_user
+
+  sql:
+    ddl:
+#      create_user: "CREATE USER ?@? IDENTIFIED BY ? REQUIRE SSL"
+#      isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
+#      isDBExists: "show databases like ?"
+#      createDB: "create database IF NOT EXISTS "
+#      getAllConnections: "SELECT usr user, COUNT(1) Connections FROM (SELECT user usr,LEFT(host,LOCATE(':',host) - 1) hst FROM information_schema.processlist WHERE user NOT IN ('system user','root')) A GROUP BY usr"
+#      getUserHost: "select host from mysql.user where user=?"
+#      revokePrivileges: "revoke all privileges, grant option from ?@?"
+#      changeHost: "RENAME USER ?@? TO ?@?"
+#      changePassword: "ALTER USER ?@? IDENTIFIED BY ?"
+#      dropUser: "DROP USER ?@?"
+#      getAllUsers: "select user, host from mysql.user"
+#      userGrants: "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON "
+#      userGrantsTo: ".* TO ?@?"
+#      userGrantsMinimal: "grant execute, select, insert, update, delete on "
+#      grantsMinimalTo: ".* TO ?@?"
+#      grantTrigger: "grant trigger on "
+#      triggerTo: ".vault_file_categories_records TO ?@?"
+#      dropDB: "DROP DATABASE "
+#      revokeUser: "revoke all privileges, grant option from ?@?"
+#      extendedUser: "grant select, insert, update, delete, create, index,alter, execute, create routine, trigger, references on"
+
+    app:
+#      getUser: "select env_mySql_user, password from environments.mts where env_mySql_user=?"
+#      getAll: "select * from environments.mts order by create_date DESC"
+#      insert: "INSERT INTO environments.mts (id, env_mySql_user, env_mySql_db, create_date, status, vault_ip, password) VALUES(?,?,?,?,?,?,?)"
+#      isRecordExists: "select count(1) as qty from environments.mts where id=?"
+#      isRecordExistsUsername: "select count(1) as qty from environments.mts where env_mySql_user=?"
+#      updateHost: "update environments.mts set vault_ip=? where env_mySql_user=?"
+#      updatePassword: "update environments.mts set password=? where id =?"
+#      update: "update environments.mts set status=?, env_mySql_user=?, password=? where id =?"
+#      updateStatus: "update environments.mts set status=? where id=?"
+#      truncate: "TRUNCATE TABLE environments.mts"
+#      delRow: "DELETE FROM environments.mts WHERE id=?"
