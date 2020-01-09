@@ -1,28 +1,41 @@
 server:
   port: 9000
-envDestroyer:
-  datasource:
-    url: "jdbc:mysql://localhost:3306/?logger=com.mysql.cj.log.StandardLogger&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=true&requireSSL=true&trustServerCertificate=true"
-    username: c123user
-    password: c123456789
-    driver-class-name: com.mysql.cj.jdbc.Driver
+
 spring:
+
+  output:
+    ansi:
+      enabled: ALWAYS
+
   datasource:
     url: "jdbc:mysql://localhost:3306/?logger=com.mysql.cj.log.StandardLogger&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=true&trustServerCertificate=true"
     username: c123user
     password: c123456789
     driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    database: default
+
 logging:
-  pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n'
+
   level:
-    org.hibernate.sql: debug
+    root: WARN
+    com.c123.KafkaSpring: WARN
+    org.springframework.core: WARN
+    org.springframework.kafka: WARN
+    org.hibernate: WARN
+
+  pattern:
+    console: "%green(%d) %highlight(%5p) %magenta([%t]) %cyan(%logger{36}.%M) - %msg%n"
+    file:    "%d %5p [%t] %logger.%M - %msg%n"
+    dateformat: "yyyy-MM-dd HH:mm:ss.SSS"
+
+  file:
+    name: log/app.log
+    max-size: 10MB
+    max-history: 30
+
 environment:
-  table: true
   db_pattern: "ca_{{ENVID}}_db"
   user_pattern: "ca_{{ENVID}}_user"
+
 sql:
   createUser: "CREATE USER ?@? IDENTIFIED BY ? REQUIRE SSL"
   isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
