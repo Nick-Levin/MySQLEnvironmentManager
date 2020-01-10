@@ -1,6 +1,6 @@
-CREATE DATABASE environments;
+CREATE DATABASE IF NOT EXISTS environments;
 
-CREATE TABLE environments.mts(
+CREATE TABLE IF NOT EXISTS environments.mts(
   id VARCHAR(100),
   env_mysql_user VARCHAR(100),
   env_mysql_db VARCHAR(100),
