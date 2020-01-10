@@ -6,11 +6,12 @@ import com.c123.MySQLConsole.entity.User;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
+import java.util.Map;
 
 public interface EnvironmentController {
 
     // GET
-    ResponseEntity<List<Environment>> getAll();
+    ResponseEntity<List<Map<String, Object>>> getAll();
     ResponseEntity<Environment> getById(String envId);
 
     // POST

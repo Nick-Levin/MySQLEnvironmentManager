@@ -26,32 +26,32 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public void updateHost(String envId, String host) {
-
+    public boolean updateHost(String envId, String host) {
+        return false;
     }
 
     @Override
-    public void updatePassword(String envId, String password) {
-
+    public boolean updatePassword(String envId, String password) {
+        return false;
     }
 
     @Override
-    public void grantMax(String envId) {
-
+    public boolean grantMax(String envId) {
+        return false;
     }
 
     @Override
-    public void grantMin(String envId) {
-
+    public boolean grantMin(String envId) {
+        return false;
     }
 
     @Override
-    public void drop(String envId) {
-
+    public boolean drop(String envId) {
+        return false;
     }
 
     @Override
-    public void dropAll() {
-
+    public boolean dropAll() {
+        return false;
     }
 }

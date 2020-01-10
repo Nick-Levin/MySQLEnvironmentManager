@@ -12,12 +12,12 @@ public interface UserDAO {
 
     User create(String envId, String host, String password);
 
-    void updateHost(String envId, String host);
-    void updatePassword(String envId, String password);
-    void grantMax(String envId);
-    void grantMin(String envId);
+    boolean updateHost(String envId, String host);
+    boolean updatePassword(String envId, String password);
+    boolean grantMax(String envId);
+    boolean grantMin(String envId);
 
-    void drop(String envId);
-    void dropAll();
+    boolean drop(String envId);
+    boolean dropAll();
 
 }

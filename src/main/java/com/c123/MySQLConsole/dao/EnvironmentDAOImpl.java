@@ -17,37 +17,37 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
     }
 
     @Override
-    public Environment create(String envId) {
+    public Environment create(String host, String passwordType, String passwordLength, String custom) {
         return null;
     }
 
     @Override
-    public void update(String envId, Environment environment) {
-
+    public boolean update(String envId, Environment environment) {
+        return false;
     }
 
     @Override
-    public void updateHost(String envId, String host) {
-
+    public boolean updateHost(String envId, String host) {
+        return false;
     }
 
     @Override
-    public void updateStatus(String envId, Status status) {
-
+    public boolean updateStatus(String envId, Status status) {
+        return false;
     }
 
     @Override
-    public void updatePassword(String envId, String password) {
-
+    public boolean updatePassword(String envId, String password) {
+        return false;
     }
 
     @Override
-    public void drop(String envId) {
-
+    public boolean drop(String envId) {
+        return false;
     }
 
     @Override
-    public void dropAll() {
-
+    public boolean dropAll() {
+        return false;
     }
 }

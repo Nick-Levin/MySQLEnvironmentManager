@@ -16,7 +16,7 @@ public interface UserController {
     ResponseEntity<Message> secure(String envId);
     ResponseEntity<Message> extend(String envId);
     ResponseEntity<Message> revoke(String envId);
-    ResponseEntity<User> rotate(String envId);
+    ResponseEntity<User> rotate(String envId, String passwordLength);
 
     // DELETE
 
