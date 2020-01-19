@@ -4,7 +4,10 @@ import com.c123.MySQLConsole.dao.EnvironmentDAO;
 import com.c123.MySQLConsole.dao.UserDAO;
 import com.c123.MySQLConsole.entity.Environment;
 import com.c123.MySQLConsole.entity.Message;
+import com.c123.MySQLConsole.entity.PasswordType;
 import com.c123.MySQLConsole.entity.User;
+import com.c123.MySQLConsole.service.IdGenerator;
+import com.c123.MySQLConsole.service.PasswordGenerator;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,6 +28,12 @@ public class EnvironmentControllerImpl implements EnvironmentController{
 
     @Autowired
     EnvironmentDAO environmentDAO;
+
+    @Autowired
+    IdGenerator idGenerator;
+
+    @Autowired
+    PasswordGenerator passwordGenerator;
 
     @Autowired
     UserDAO userDAO;
@@ -56,12 +65,21 @@ public class EnvironmentControllerImpl implements EnvironmentController{
     @Override
     @PostMapping("/create")
     public ResponseEntity<User> create(
+            @RequestParam(name = "env", required = false, defaultValue = "") String customEnv,
             @RequestParam(name = "host", required = true) String host,
             @RequestParam(name = "type", required = false, defaultValue = "generate") String passwordType,
             @RequestParam(name = "length", required = true) String passwordLength,
             @RequestParam(name = "custom", required = false, defaultValue = "") String custom) {
-        final Environment env = environmentDAO.create(host, passwordType, passwordLength, custom);
-        final User user = userDAO.getOne(env.getId());
+        final String envId = customEnv.isEmpty() ? idGenerator.generate() : customEnv;
+        final PasswordType type = PasswordType.valueOf(passwordType.toUpperCase());
+
+        final String password = type.equals(PasswordType.SAME)
+                ? envId
+                : passwordGenerator.getPass(type, Integer.valueOf(passwordLength), custom);
+
+        final Environment env = environmentDAO.create(envId, host, password);
+        final User user = new User(env.getUsername(), env.getPassword());
+
         return new ResponseEntity(user, HttpStatus.OK);
     }
 

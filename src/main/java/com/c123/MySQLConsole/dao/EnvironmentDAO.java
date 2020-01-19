@@ -10,7 +10,7 @@ public interface EnvironmentDAO {
     List<Environment> getAll();
     Environment getOne(String envId);
 
-    Environment create(String host, String passwordType, String passwordLength, String custom);
+    Environment create(String envId, String host, String password);
 
     boolean update(String envId, Environment environment);
     boolean updateHost(String envId, String host);

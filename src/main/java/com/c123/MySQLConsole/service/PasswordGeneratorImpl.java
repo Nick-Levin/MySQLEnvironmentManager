@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class PasswordGeneratorImpl implements PasswordGenerator{
+public class PasswordGeneratorImpl implements PasswordGenerator {
 
     @Autowired
     PasswordConfiguration passwordConfiguration;
@@ -26,6 +26,7 @@ public class PasswordGeneratorImpl implements PasswordGenerator{
                 break;
             case MOCK:
                 password = passwordConfiguration.getMockValue();
+                break;
             case EMPTY:
                 break;
         }

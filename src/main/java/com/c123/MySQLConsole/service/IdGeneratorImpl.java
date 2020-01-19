@@ -16,7 +16,7 @@ public class IdGeneratorImpl implements IdGenerator {
         final StringBuilder envId = new StringBuilder(environmentConfiguration.getLength());
         while(envId.length() < environmentConfiguration.getLength())
             envId.append(StringUtils.getRandomChar.apply(environmentConfiguration.getSymbols()));
-        return null;
+        return envId.toString();
     }
 
 }
