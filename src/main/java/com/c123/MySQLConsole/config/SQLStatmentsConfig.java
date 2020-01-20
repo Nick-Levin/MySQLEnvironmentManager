@@ -22,5 +22,14 @@ public class SQLStatmentsConfig {
     private String dropDB;
     private String deleteEnv;
     private String getConnections;
+    private String changeHost;
+    private String updateHost;
+    private String userGrantMin;
+    private String userGrantMax;
+    private String revokePrivileges;
+    private String updateStatus;
+    private String truncate;
+    private String changePassword;
+    private String updatePassword;
 
 }

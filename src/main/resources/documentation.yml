@@ -1,0 +1,48 @@
+GET:
+  all_environments: http://localhost:9000/environments/
+  one_environment: http://localhost:9000/environments/{{ENVID}}
+  one_user: http://localhost:9000/users/{{ENVID}}
+POST:
+  create_env:
+    endpoints:
+      - http://localhost:9000/environments/create?host={{HOST}}&length={{LENGTH}}
+      - http://localhost:9000/environments/create?host={{HOST}}&length={{LENGTH}}&env={{ENVID}}
+      - http://localhost:9000/environments/create?host={{HOST}}&length={{LENGTH}}&type={{PASS_TYPE}}
+      - http://localhost:9000/environments/create?host={{HOST}}&length={{LENGTH}}&type=custom&custom={{PASSWORD}}
+    form_args:
+      - name: host
+        value: IP/DNS (String)
+        required: true
+      - name: length
+        value: number
+        required: true
+      - name: env
+        value: environment ID (String)
+        required: false
+      - name: type
+        value: ENUM (same, empty, mock, generate, custom)
+        required: false
+      - name: custom
+        value: password (String)
+        required: false (requires type custom)
+PUT:
+  change_host:
+    endpoints:
+      - http://localhost:9000/users/rename/{{ENVID}}?host=localhost
+    form_args:
+      - name: host
+        value: IP/DNS (String)
+        required: true
+  secure: http://localhost:9000/users/secure/{{ENVID}}
+  extend: http://localhost:9000/users/extend/{{ENVID}}
+  revoke: http://localhost:9000/users/revoke/{{ENVID}}
+  rotate:
+    endpoints:
+      - http://localhost:9000/users/rotate/{{ENVID}}?length=20
+    form_args:
+      - name: length
+        value: number
+        required: true
+DELETE:
+  one_env: http://localhost:9000/environments/{{ENVID}}
+  all_envs: http://localhost:9000/environments

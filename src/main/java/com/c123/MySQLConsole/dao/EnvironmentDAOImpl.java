@@ -1,6 +1,5 @@
 package com.c123.MySQLConsole.dao;
 
-import com.c123.MySQLConsole.config.EnvironmentConfiguration;
 import com.c123.MySQLConsole.config.NamingPatternConfiguration;
 import com.c123.MySQLConsole.config.SQLStatmentsConfig;
 import com.c123.MySQLConsole.entity.Environment;
@@ -43,8 +42,8 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
     @Override
     public Environment create(String envId, String host, String password) {
         final Timestamp creationTime = new Timestamp(new Date().getTime());
-        final String dbname = patterns.getDb().replace("{{ENVID}}", envId);
-        final String sql = sqlStatmentsConfig.getCreateDB().replace("{{DBNAME}}", dbname);
+        final String dbname = patterns.getDb().replace("[[ENVID]]", envId);
+        final String sql = sqlStatmentsConfig.getCreateDB().replace("[[DBNAME]]", dbname);
         jdbcTemplate.execute(sql);
         final User user = userDAO.create(envId, host, password);
         jdbcTemplate.update(sqlStatmentsConfig.getInsertEnv(),
@@ -59,17 +58,21 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
 
     @Override
     public boolean updateHost(String envId, String host) {
-        return false;
+        jdbcTemplate.update(sqlStatmentsConfig.getUpdateHost(), host, envId);
+        return true;
     }
 
     @Override
     public boolean updateStatus(String envId, Status status) {
-        return false;
+        final String sql = sqlStatmentsConfig.getUpdateStatus();
+        jdbcTemplate.update(sql, status.getDesc(), envId);
+        return true;
     }
 
     @Override
     public boolean updatePassword(String envId, String password) {
-        return false;
+        jdbcTemplate.update(sqlStatmentsConfig.getUpdatePassword(), password, envId);
+        return true;
     }
 
     @Override
@@ -80,20 +83,12 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
                 new EnvironmentRowMapper()
         );
 
-        final String dropUser = sqlStatmentsConfig.getDropUser()
-                .replace("{{USER}}", env.getUsername())
-                .replace("{{HOST}}",env.getHostIp());
-
         final String dropDb = sqlStatmentsConfig.getDropDB()
-                .replace("{{DBNAME}}", env.getDbName());
+                .replace("[[DBNAME]]", env.getDbName());
 
-        final String deleteEnv = sqlStatmentsConfig.getDeleteEnv()
-                .replace("{{ENVID}}",envId);
-
-        jdbcTemplate.execute(dropUser);
+        userDAO.drop(envId, env.getHostIp());
         jdbcTemplate.execute(dropDb);
-        jdbcTemplate.execute(deleteEnv);
-
+        jdbcTemplate.update(sqlStatmentsConfig.getUpdateStatus(), Status.DROPPED.getDesc(), envId);
         return true;
     }
 
@@ -104,6 +99,11 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
             drop(env.getId());
         });
 
+        truncate();
         return true;
+    }
+
+    private void truncate() {
+        jdbcTemplate.execute(sqlStatmentsConfig.getTruncate());
     }
 }

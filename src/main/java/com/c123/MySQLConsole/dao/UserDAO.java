@@ -14,10 +14,10 @@ public interface UserDAO {
 
     boolean updateHost(String envId, String host);
     boolean updatePassword(String envId, String password);
-    boolean grantMax(String envId);
-    boolean grantMin(String envId);
+    boolean grantMax(String envId, String host);
+    boolean grantMin(String envId, String host);
 
-    boolean drop(String envId);
+    boolean drop(String envId, String host);
     boolean dropAll();
 
 }

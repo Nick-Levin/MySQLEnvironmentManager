@@ -44,30 +44,33 @@ application:
     symbols: "0124315609457981279978243042819758120473278604241068720862162431274"
 
   pattern:
-    db: ca_{{ENVID}}_db
-    user: ca_{{ENVID}}_user
+    db: ca_[[ENVID]]_db
+    user: ca_[[ENVID]]_user
 
   sql:
-    create_db: create database IF NOT EXISTS {{DBNAME}}
+    create_db: create database IF NOT EXISTS [[DBNAME]]
+    create_user: CREATE USER '[[USER]]'@'[[HOST]]' IDENTIFIED BY '[[PASSWORD]]' REQUIRE SSL
     get_env: select * from environments.mts where id = ?
     get_all_envs: select * from environments.mts order by create_date DESC
     insert_env: INSERT INTO environments.mts (id, env_mysql_user, env_mysql_db, create_date, status, host_ip, password) VALUES(?,?,?,?,?,?,?)
-    create_user: CREATE USER '{{USER}}'@'{{HOST}}' IDENTIFIED BY '{{PASSWORD}}' REQUIRE SSL
-    drop_user: DROP USER '{{USER}}'@'{{HOST}}'
-    drop_db: DROP DATABASE {{DBNAME}}
-    delete_env: DELETE FROM environments.mts WHERE id={{ENVID}}
+    drop_user: DROP USER '[[USER]]'@'[[HOST]]'
+    drop_db: DROP DATABASE [[DBNAME]]
+    delete_env: DELETE FROM environments.mts WHERE id=[[ENVID]]
     get_connections: SELECT usr user, COUNT(1) Connections FROM (SELECT user usr,LEFT(host,LOCATE(':',host) - 1) hst FROM information_schema.processlist WHERE user NOT IN ('system user','root')) A GROUP BY usr
+    change_host: RENAME USER [[USER]]@[[OLD_HOST]] TO [[USER]]@[[NEW_HOST]]
+    update_host: update environments.mts set host_ip = ? where id = ?
+    user_grant_max: GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON [[DBNAME]].* TO '[[USER]]'@'[[HOST]]'
+    user_grant_min: grant execute, select, insert, update, delete on [[DBNAME]].* to '[[USER]]'@'[[HOST]]'
+    revoke_privileges: revoke all privileges, grant option from '[[USER]]'@'[[HOST]]'
+    update_status: update environments.mts set status=? where id=?
+    truncate: truncate table environments.mts
+    change_password: ALTER USER '[[USER]]'@'[[HOST]]' IDENTIFIED BY '[[PASSWORD]]'
+    update_Password: update environments.mts set password = ? where id = ?
 
 #    isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
 #    isDBExists: "show databases like ?"
 #    getUserHost: "select host from mysql.user where user=?"
-#    revokePrivileges: "revoke all privileges, grant option from ?@?"
-#    changeHost: "RENAME USER ?@? TO ?@?"
-#    changePassword: "ALTER USER ?@? IDENTIFIED BY ?"
 #    getAllUsers: "select user, host from mysql.user"
-#    userGrants: "GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON "
-#    userGrantsTo: ".* TO ?@?"
-#    userGrantsMinimal: "grant execute, select, insert, update, delete on "
 #    grantsMinimalTo: ".* TO ?@?"
 #    grantTrigger: "grant trigger on "
 #    triggerTo: ".vault_file_categories_records TO ?@?"
@@ -79,8 +82,5 @@ application:
 #    getUser: "select env_mySql_user, password from environments.mts where env_mySql_user=?"
 #    isRecordExists: "select count(1) as qty from environments.mts where id=?"
 #    isRecordExistsUsername: "select count(1) as qty from environments.mts where env_mySql_user=?"
-#    updateHost: "update environments.mts set vault_ip=? where env_mySql_user=?"
-#    updatePassword: "update environments.mts set password=? where id =?"
 #    update: "update environments.mts set status=?, env_mySql_user=?, password=? where id =?"
-#    updateStatus: "update environments.mts set status=? where id=?"
 #    truncate: "TRUNCATE TABLE environments.mts"

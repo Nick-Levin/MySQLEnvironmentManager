@@ -4,6 +4,7 @@ import com.c123.MySQLConsole.dao.EnvironmentDAO;
 import com.c123.MySQLConsole.dao.UserDAO;
 import com.c123.MySQLConsole.entity.Message;
 import com.c123.MySQLConsole.entity.PasswordType;
+import com.c123.MySQLConsole.entity.Status;
 import com.c123.MySQLConsole.entity.User;
 import com.c123.MySQLConsole.service.PasswordGenerator;
 import org.slf4j.Logger;
@@ -40,15 +41,20 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<Message> rename(
             @PathVariable String envId,
             @RequestParam(name = "host", required = true) String newHost) {
-        final boolean result = userDAO.updateHost(envId, newHost);
-        final Message message = result ? new Message("Updated") : new Message("operation failed");
+        final boolean resultUser = userDAO.updateHost(envId, newHost);
+        final boolean resultEnv = environmentDAO.updateHost(envId, newHost);
+        final Message message = resultUser && resultEnv
+                ? new Message("Updated")
+                : new Message("operation failed");
         return new ResponseEntity(message, HttpStatus.OK);
     }
 
     @Override
     @PutMapping("/secure/{envId}")
     public ResponseEntity<Message> secure(@PathVariable String envId) {
-        final boolean result = userDAO.grantMin(envId);
+        final String host = environmentDAO.getOne(envId).getHostIp();
+        final boolean result = userDAO.grantMin(envId, host);
+        environmentDAO.updateStatus(envId, Status.SECURED);
         final Message message = result ? new Message("Updated") : new Message("operation failed");
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -56,7 +62,9 @@ public class UserControllerImpl implements UserController {
     @Override
     @PutMapping("/extend/{envId}")
     public ResponseEntity<Message> extend(@PathVariable String envId) {
-        final boolean result = userDAO.grantMax(envId);
+        final String host = environmentDAO.getOne(envId).getHostIp();
+        final boolean result = userDAO.grantMax(envId, host);
+        environmentDAO.updateStatus(envId, Status.EXTENDED);
         final Message message = result ? new Message("Updated") : new Message("operation failed");
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -64,7 +72,9 @@ public class UserControllerImpl implements UserController {
     @Override
     @PutMapping("/revoke/{envId}")
     public ResponseEntity<Message> revoke(@PathVariable String envId) {
-        final boolean result = userDAO.grantMin(envId);
+        final String host = environmentDAO.getOne(envId).getHostIp();
+        final boolean result = userDAO.grantMin(envId, host);
+        environmentDAO.updateStatus(envId, Status.SECURED);
         final Message message = result ? new Message("Updated") : new Message("operation failed");
         return new ResponseEntity(message, HttpStatus.OK);
     }
@@ -76,7 +86,8 @@ public class UserControllerImpl implements UserController {
             @RequestParam(name = "length", required = true) String passwordLength) {
         final String newPassword = passwordGenerator.getPass(
                 PasswordType.GENERATE, Integer.valueOf(passwordLength), "");
-        final boolean result = userDAO.updatePassword(envId, newPassword);
+        final boolean resultUser = userDAO.updatePassword(envId, newPassword);
+        final boolean resultEnv = environmentDAO.updatePassword(envId, newPassword);
         final User user = userDAO.getOne(envId);
         return new ResponseEntity(user, HttpStatus.OK);
     }
