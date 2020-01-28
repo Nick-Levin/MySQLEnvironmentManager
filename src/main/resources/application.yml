@@ -1,5 +1,6 @@
 server:
   port: 9000
+  address: "0.0.0.0"
 
 spring:
 
@@ -66,21 +67,3 @@ application:
     truncate: truncate table environments.mts
     change_password: ALTER USER '[[USER]]'@'[[HOST]]' IDENTIFIED BY '[[PASSWORD]]'
     update_Password: update environments.mts set password = ? where id = ?
-
-#    isUserExists: "select count(1) as users from mysql.user where user=? and host=?"
-#    isDBExists: "show databases like ?"
-#    getUserHost: "select host from mysql.user where user=?"
-#    getAllUsers: "select user, host from mysql.user"
-#    grantsMinimalTo: ".* TO ?@?"
-#    grantTrigger: "grant trigger on "
-#    triggerTo: ".vault_file_categories_records TO ?@?"
-#    revokeUser: "revoke all privileges, grant option from ?@?"
-#    extendedUser: "grant select, insert, update, delete, create, index,alter, execute, create routine, trigger, references on"
-
-#    ----------------------------------------------------------
-
-#    getUser: "select env_mySql_user, password from environments.mts where env_mySql_user=?"
-#    isRecordExists: "select count(1) as qty from environments.mts where id=?"
-#    isRecordExistsUsername: "select count(1) as qty from environments.mts where env_mySql_user=?"
-#    update: "update environments.mts set status=?, env_mySql_user=?, password=? where id =?"
-#    truncate: "TRUNCATE TABLE environments.mts"

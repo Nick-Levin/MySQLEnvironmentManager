@@ -45,14 +45,14 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public Integer getConnections(String envId) {
+    public Long getConnections(String envId) {
         final String user = patterns.getUser().replace("[[ENVID]]", envId);
 
-        List<Integer> list = jdbcTemplate.queryForList(sqlStatmentsConfig.getGetConnections()).stream()
+        List<Long> list = jdbcTemplate.queryForList(sqlStatmentsConfig.getGetConnections()).stream()
                 .filter(conns -> ((String)conns.get("user")).equals(user))
-                .map(conns -> (int)conns.get("Connections"))
+                .map(conns -> (long)conns.get("Connections"))
                 .collect(Collectors.toList());
-        return list.isEmpty() ? 0 : list.get(0);
+        return list.isEmpty() ? 0L : list.get(0);
     }
 
     @Override

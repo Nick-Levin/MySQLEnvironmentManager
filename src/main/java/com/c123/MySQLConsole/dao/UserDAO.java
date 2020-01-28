@@ -8,7 +8,7 @@ public interface UserDAO {
 
     List<User> getall();
     User getOne(String envId);
-    Integer getConnections(String envId);
+    Long getConnections(String envId);
 
     User create(String envId, String host, String password);
 
