@@ -9,6 +9,7 @@ import com.c123.MySQLConsole.entity.User;
 import com.c123.MySQLConsole.service.PasswordGenerator;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +33,12 @@ public class UserControllerImpl implements UserController {
     @Override
     @GetMapping("/{envId}")
     public ResponseEntity<User> restore(@PathVariable String envId) {
-        final User user = userDAO.getOne(envId);
-        return new ResponseEntity(user, HttpStatus.OK);
+        try {
+            return new ResponseEntity(userDAO.getOne(envId), HttpStatus.OK);
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(new Message("Environment not found"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
@@ -41,54 +46,64 @@ public class UserControllerImpl implements UserController {
     public ResponseEntity<Message> rename(
             @PathVariable String envId,
             @RequestParam(name = "host", required = true) String newHost) {
-        final boolean resultUser = userDAO.updateHost(envId, newHost);
-        final boolean resultEnv = environmentDAO.updateHost(envId, newHost);
-        final Message message = resultUser && resultEnv
-                ? new Message("Updated")
-                : new Message("operation failed");
-        return new ResponseEntity(message, HttpStatus.OK);
+        try {
+            userDAO.updateHost(envId, newHost);
+            environmentDAO.updateHost(envId, newHost);
+            return new ResponseEntity(new Message("Updated"), HttpStatus.OK);
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(new Message("Operation failed"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     @PutMapping("/secure/{envId}")
     public ResponseEntity<Message> secure(@PathVariable String envId) {
-        final String host = environmentDAO.getOne(envId).getHostIp();
-        final boolean result = userDAO.grantMin(envId, host);
-        environmentDAO.updateStatus(envId, Status.SECURED);
-        final Message message = result ? new Message("Updated") : new Message("operation failed");
-        return new ResponseEntity(message, HttpStatus.OK);
+        try {
+            final String host = environmentDAO.getOne(envId).getHostIp();
+            userDAO.grantMin(envId, host);
+            environmentDAO.updateStatus(envId, Status.SECURED);
+            return new ResponseEntity(new Message("Updated"), HttpStatus.OK);
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(new Message("Operation failed"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     @PutMapping("/extend/{envId}")
     public ResponseEntity<Message> extend(@PathVariable String envId) {
-        final String host = environmentDAO.getOne(envId).getHostIp();
-        final boolean result = userDAO.grantMax(envId, host);
-        environmentDAO.updateStatus(envId, Status.EXTENDED);
-        final Message message = result ? new Message("Updated") : new Message("operation failed");
-        return new ResponseEntity(message, HttpStatus.OK);
+        try {
+            final String host = environmentDAO.getOne(envId).getHostIp();
+            userDAO.grantMax(envId, host);
+            environmentDAO.updateStatus(envId, Status.EXTENDED);
+            return new ResponseEntity(new Message("Updated"), HttpStatus.OK);
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(new Message("Operation failed"), HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Override
     @PutMapping("/revoke/{envId}")
     public ResponseEntity<Message> revoke(@PathVariable String envId) {
-        final String host = environmentDAO.getOne(envId).getHostIp();
-        final boolean result = userDAO.grantMin(envId, host);
-        environmentDAO.updateStatus(envId, Status.SECURED);
-        final Message message = result ? new Message("Updated") : new Message("operation failed");
-        return new ResponseEntity(message, HttpStatus.OK);
+        return secure(envId);
     }
 
     @Override
     @PutMapping("/rotate/{envId}")
     public ResponseEntity<User> rotate(
             @PathVariable String envId,
-            @RequestParam(name = "length", required = true) String passwordLength) {
-        final String newPassword = passwordGenerator.getPass(
-                PasswordType.GENERATE, Integer.valueOf(passwordLength), "");
-        final boolean resultUser = userDAO.updatePassword(envId, newPassword);
-        final boolean resultEnv = environmentDAO.updatePassword(envId, newPassword);
-        final User user = userDAO.getOne(envId);
-        return new ResponseEntity(user, HttpStatus.OK);
+            @RequestParam(name = "length", required = true, defaultValue = "8") int passwordLength) {
+        try {
+            final String newPassword = passwordGenerator.getPass(PasswordType.GENERATE, passwordLength, "");
+            userDAO.updatePassword(envId, newPassword);
+            environmentDAO.updatePassword(envId, newPassword);
+            final User user = userDAO.getOne(envId);
+            return new ResponseEntity(user, HttpStatus.OK);
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return new ResponseEntity(new Message("Operation failed"), HttpStatus.BAD_REQUEST);
+        }
     }
 }

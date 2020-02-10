@@ -15,7 +15,7 @@ public interface EnvironmentController {
     ResponseEntity<Environment> getById(String envId);
 
     // POST
-    ResponseEntity<User> create(String customEnv, String host, String passwordType, String passwordLength, String custom);
+    ResponseEntity<User> create(String customEnv, String host, String passwordType, int passwordLength, String custom);
 
     // PUT
 

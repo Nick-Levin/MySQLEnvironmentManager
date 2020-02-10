@@ -6,7 +6,9 @@ import com.c123.MySQLConsole.entity.Environment;
 import com.c123.MySQLConsole.entity.Status;
 import com.c123.MySQLConsole.entity.User;
 import com.c123.MySQLConsole.rowmapper.EnvironmentRowMapper;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -29,13 +31,16 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
     @Autowired
     UserDAO userDAO;
 
+    @Autowired
+    Logger logger;
+
     @Override
     public List<Environment> getAll() {
         return jdbcTemplate.query(sqlStatmentsConfig.getGetAllEnvs(), new EnvironmentRowMapper());
     }
 
     @Override
-    public Environment getOne(String envId) {
+    public Environment getOne(String envId) throws DataAccessException {
         return jdbcTemplate.queryForObject(sqlStatmentsConfig.getGetEnv(), new Object[] {envId}, new EnvironmentRowMapper());
     }
 
@@ -77,19 +82,24 @@ public class EnvironmentDAOImpl implements EnvironmentDAO {
 
     @Override
     public boolean drop(String envId) {
-        final Environment env = jdbcTemplate.queryForObject(
-                sqlStatmentsConfig.getGetEnv(),
-                new Object[] {envId},
-                new EnvironmentRowMapper()
-        );
+        try{
+            final Environment env = jdbcTemplate.queryForObject(
+                    sqlStatmentsConfig.getGetEnv(),
+                    new Object[] {envId},
+                    new EnvironmentRowMapper()
+            );
 
-        final String dropDb = sqlStatmentsConfig.getDropDB()
-                .replace("[[DBNAME]]", env.getDbName());
+            final String dropDb = sqlStatmentsConfig.getDropDB()
+                    .replace("[[DBNAME]]", env.getDbName());
 
-        userDAO.drop(envId, env.getHostIp());
-        jdbcTemplate.execute(dropDb);
-        jdbcTemplate.update(sqlStatmentsConfig.getUpdateStatus(), Status.DROPPED.getDesc(), envId);
-        return true;
+            userDAO.drop(envId, env.getHostIp());
+            jdbcTemplate.execute(dropDb);
+            jdbcTemplate.update(sqlStatmentsConfig.getUpdateStatus(), Status.DROPPED.getDesc(), envId);
+            return true;
+        } catch (DataAccessException e) {
+            logger.error(e.getMessage());
+            return false;
+        }
     }
 
     @Override

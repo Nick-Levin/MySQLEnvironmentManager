@@ -6,6 +6,7 @@ import com.c123.MySQLConsole.entity.Environment;
 import com.c123.MySQLConsole.entity.User;
 import com.c123.MySQLConsole.rowmapper.EnvironmentRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -35,7 +36,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public User getOne(String envId) {
+    public User getOne(String envId) throws DataAccessException {
         final Environment env = jdbcTemplate.queryForObject(
                 sqlStatmentsConfig.getGetEnv(),
                 new Object[] {envId},
@@ -71,7 +72,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean updateHost(String envId, String host) {
+    public boolean updateHost(String envId, String host) throws DataAccessException {
         final String oldHost = environmentDAO.getOne(envId).getHostIp();
         final String user = patterns.getUser().replace("[[ENVID]]", envId);
 
@@ -85,7 +86,7 @@ public class UserDAOImpl implements UserDAO {
     }
 
     @Override
-    public boolean updatePassword(String envId, String password) {
+    public boolean updatePassword(String envId, String password) throws DataAccessException {
         final Environment environment = environmentDAO.getOne(envId);
 
         final String sql = sqlStatmentsConfig.getChangePassword()

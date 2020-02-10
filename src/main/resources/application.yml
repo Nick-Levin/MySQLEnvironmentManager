@@ -56,9 +56,9 @@ application:
     insert_env: INSERT INTO environments.mts (id, env_mysql_user, env_mysql_db, create_date, status, host_ip, password) VALUES(?,?,?,?,?,?,?)
     drop_user: DROP USER '[[USER]]'@'[[HOST]]'
     drop_db: DROP DATABASE [[DBNAME]]
-    delete_env: DELETE FROM environments.mts WHERE id=[[ENVID]]
+    delete_env: DELETE FROM environments.mts WHERE id='[[ENVID]]'
     get_connections: SELECT usr user, COUNT(1) Connections FROM (SELECT user usr,LEFT(host,LOCATE(':',host) - 1) hst FROM information_schema.processlist WHERE user NOT IN ('system user','root')) A GROUP BY usr
-    change_host: RENAME USER [[USER]]@[[OLD_HOST]] TO [[USER]]@[[NEW_HOST]]
+    change_host: RENAME USER '[[USER]]'@'[[OLD_HOST]]' TO '[[USER]]'@'[[NEW_HOST]]'
     update_host: update environments.mts set host_ip = ? where id = ?
     user_grant_max: GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, INDEX, ALTER, EXECUTE, CREATE ROUTINE, TRIGGER, REFERENCES ON [[DBNAME]].* TO '[[USER]]'@'[[HOST]]'
     user_grant_min: grant execute, select, insert, update, delete on [[DBNAME]].* to '[[USER]]'@'[[HOST]]'
